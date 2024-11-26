@@ -19,11 +19,14 @@ from icalendar import Alarm
 import segno
 from PIL import Image, ImageDraw, ImageFont
 
+print("Start...")
 
 load_dotenv()
 
 icloud_username = os.getenv("icloud_username")
 icloud_password = os.getenv("icloud_password")
+
+print("icloud_username = ", icloud_username)
 
 
 # Public iCloud Calender URLs:
@@ -35,10 +38,7 @@ user1   = os.getenv("user1")
 passwd1 = os.getenv("passwd1")    
 
 user2   = os.getenv("user2")
-passwd2 = os.getenv("passwd2")    
-
-
-
+passwd2 = os.getenv("passwd2")
 
 # Kepler-URLs
 
@@ -77,6 +77,7 @@ def get_ical_events_from_kepler(user: str, passwd: str) -> Set[IcsEvent]:
     response = requests.get(f"{base_url}/{ical_frag}", cookies=cookies)
 
     if "BEGIN:VCALENDAR" not in response.text:
+        #print("response.text: ", response.text)
         print("Failed, can't find calendar entries (bad login?)")
         exit(-1)
         
@@ -145,14 +146,14 @@ def add_to_ical(calender_name: str, events: Set[IcsEvent]) -> Set[IcsEvent]:
         alarm.add('trigger', alarm_time)
         calEvent.add_component(alarm)
 
-        alarm2 = Alarm()
-        alarm2.add('action', 'DISPLAY')  # Alarm-Typ: DISPLAY zeigt eine Erinnerung an
-        alarm2.add('description', f'Erinnerung in einer Woche: {title}!')
+        if True:
+            alarm2 = Alarm()
+            alarm2.add('action', 'DISPLAY')  # Alarm-Typ: DISPLAY zeigt eine Erinnerung an
+            alarm2.add('description', f'Erinnerung in einer Woche: {title}!')
 
-        alarm2_time = dtstart - timedelta(days=7, hours=24-alarm_hour)  # diff to alarm time
-        alarm2.add('trigger', alarm2_time)
-        calEvent.add_component(alarm2)
-
+            alarm2_time = dtstart - timedelta(days=7, hours=24-alarm_hour)  # diff to alarm time
+            alarm2.add('trigger', alarm2_time)
+            calEvent.add_component(alarm2)
     
         ical.add_component(calEvent)
 
@@ -196,17 +197,11 @@ add_to_ical("KA-Kepi-6c", events)
 create_qr_code("KA Kepi 6c", KA_Kepi_6c_url)
 print("Events added successfully!")
 
+exit(0)
+
 events = get_ical_events_from_kepler(user2, passwd2)
 for event in events:
     print(f"Event: {event.uid}  --> {event.name}")
 add_to_ical("KA-Kepi-8c", events)
 create_qr_code("KA Kepi 8c", KA_Kepi_8c_url)
 print("Events added successfully!")
-
-
-
-
-
-
-create_qr_code("KA Kepi 8c", KA_Kepi_8c_url)
-
