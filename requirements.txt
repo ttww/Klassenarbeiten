@@ -1,0 +1,10 @@
+requests
+ics
+caldav
+python-dotenv
+
+# For QR:
+segno
+
+# For adding text to QR:
+Pillow
