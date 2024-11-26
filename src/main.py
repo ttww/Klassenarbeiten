@@ -16,6 +16,10 @@ from icalendar import Calendar as iCalendar
 from icalendar import Event as CalEvent
 from icalendar import Alarm
 
+import segno
+from PIL import Image, ImageDraw, ImageFont
+
+
 load_dotenv()
 
 icloud_username = os.getenv("icloud_username")
@@ -33,6 +37,10 @@ passwd1 = os.getenv("passwd1")
 user2   = os.getenv("user2")
 passwd2 = os.getenv("passwd2")    
 
+
+
+
+# Kepler-URLs
 
 base_url="https://orga.kepi.de"
 auth_frag="gfs/ajax/dologin.php"
@@ -68,11 +76,15 @@ def get_ical_events_from_kepler(user: str, passwd: str) -> Set[IcsEvent]:
 
     response = requests.get(f"{base_url}/{ical_frag}", cookies=cookies)
 
+    if "BEGIN:VCALENDAR" not in response.text:
+        print("Failed, can't find calendar entries (bad login?)")
+        exit(-1)
+        
     cleaned_content = remove_duplicate_dtstamp(response.text)
 
     calendar = Calendar(cleaned_content)
     
-    # Check für duplicate events:    
+    # Check for duplicate events ids:    
     ids = set()
     for event in calendar.events:
         if event.uid in ids:
@@ -94,7 +106,7 @@ def add_to_ical(calender_name: str, events: Set[IcsEvent]) -> Set[IcsEvent]:
     calendars = principal.calendars()
 
     calendar = None
-    #calendar = calendars[0]
+
     for i_calender in calendars:
         if i_calender.name == calender_name:
             calendar = i_calender
@@ -119,7 +131,7 @@ def add_to_ical(calender_name: str, events: Set[IcsEvent]) -> Set[IcsEvent]:
         calEvent.add("summary", title)
         calEvent.add("dtstart", dtstart.date())
         calEvent.add("dtend", dtend.date())
-        #calEvent.add("description", "This is a test event added by Python.")
+        #calEvent.add("description", "This is a test...")
         #calEvent.add("location", "Online")
         calEvent.add("uid", event.uid)
 
@@ -149,52 +161,52 @@ def add_to_ical(calender_name: str, events: Set[IcsEvent]) -> Set[IcsEvent]:
     calendar.add_event(ical.to_ical())
     print("Updload to iCloud...Done")
 
-
-# Main ----------------------------------------------------------------------
-
-events = get_ical_events_from_kepler(user1, passwd1)
-
-for event in events:
-    print(f"Event: {event.uid}  --> {event.name}")
-
-
-add_to_ical("KA-Kepi-6c", events)
-print("Event added successfully!")
-
-
-
-import segno
-from PIL import Image, ImageDraw, ImageFont
-
-
 def create_qr_code(title: str, url: str):
 
-    print("Create QR-Code for URL:", url)
+    print("Create QR-Code for ", title)
     
-    filename = f"QR_{title.replace(' ','_')}.png"
+    filename = f"QR {title}.png".replace(' ','_')
     qrcode = segno.make_qr(url)
     qrcode.save(filename, scale = 8)
     print(f"QR-Code created successfully: {filename}")  
 
-    font = ImageFont.truetype("Arial.ttf", 30)  # Example: Arial font, size 20
+    print("Add sub-title to QR-Code")
+    font = ImageFont.truetype("Arial.ttf", 30)
 
     image = Image.open(filename)
-
     image_width, image_height = image.size
 
     new_image = Image.new("RGBA", (image_width, image_height + 20), (255, 255, 255, 255))
     new_image.paste(image, (0, 0))
 
     draw = ImageDraw.Draw(new_image)
-    text_width, text_height = draw.textbbox((0, 0), title, font=font)[2:]  # Get text width and height
+    text_width, text_height = draw.textbbox((0, 0), title, font=font)[2:]
     text_x = (image_width - text_width) // 2
     text_y = image_height - text_height + 10
     draw.text((text_x, text_y), title, fill="black", font=font)
 
-    # Save the result
     new_image.save(filename)
 
+# Main ----------------------------------------------------------------------
 
+events = get_ical_events_from_kepler(user1, passwd1)
+for event in events:
+    print(f"Event: {event.uid}  --> {event.name}")
+add_to_ical("KA-Kepi-6c", events)
 create_qr_code("KA Kepi 6c", KA_Kepi_6c_url)
+print("Events added successfully!")
+
+events = get_ical_events_from_kepler(user2, passwd2)
+for event in events:
+    print(f"Event: {event.uid}  --> {event.name}")
+add_to_ical("KA-Kepi-8c", events)
+create_qr_code("KA Kepi 8c", KA_Kepi_8c_url)
+print("Events added successfully!")
+
+
+
+
+
+
 create_qr_code("KA Kepi 8c", KA_Kepi_8c_url)
 
