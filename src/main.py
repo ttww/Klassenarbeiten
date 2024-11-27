@@ -1,3 +1,4 @@
+import time
 import pytz
 import os
 import requests
@@ -95,7 +96,7 @@ def get_ical_events_from_kepler(user: str, passwd: str) -> Set[IcsEvent]:
     return calendar.events
    
    
-def add_to_ical(calender_name: str, events: Set[IcsEvent]) -> Set[IcsEvent]:
+def add_to_ical(calender_name: str, prefix: str, events: Set[IcsEvent]) -> Set[IcsEvent]:
     
     client = DAVClient(
         url="https://caldav.icloud.com/",
@@ -128,6 +129,8 @@ def add_to_ical(calender_name: str, events: Set[IcsEvent]) -> Set[IcsEvent]:
         dtend   = event.end.datetime.replace(tzinfo=local_tz)
 
         title = event.name.replace("Klassenarbeit", "KA")
+        
+        title = f"{prefix}{title}"
         
         calEvent.add("summary", title)
         calEvent.add("dtstart", dtstart.date())
@@ -190,18 +193,47 @@ def create_qr_code(title: str, url: str):
 
 # Main ----------------------------------------------------------------------
 
-events = get_ical_events_from_kepler(user1, passwd1)
-for event in events:
-    print(f"Event: {event.uid}  --> {event.name}")
-add_to_ical("KA-Kepi-6c", events)
-create_qr_code("KA Kepi 6c", KA_Kepi_6c_url)
-print("Events added successfully!")
+def create_one_class(user: str, passwd: str, calender_name: str, prefix: str, url: str):
+    events = get_ical_events_from_kepler(user, passwd)
+    for event in events:
+        print(f"Event: {event.uid}  --> {event.name}")
+    add_to_ical(calender_name, prefix, events)
+    #create_qr_code(calender_name, url)
+    print(f"Events added to {calender_name} successfully!")
+    
+    
+while True:
+    print("Start...")
+    
+    try:
+        create_one_class(user1, passwd1, "KA-Kepi-6c", "6c: ", KA_Kepi_6c_url)
+    except Exception as e:
+        print("Error: ", e)
 
-exit(0)
+    try:
+        create_one_class(user2, passwd2, "KA-Kepi-8c", "8c: ", KA_Kepi_8c_url)
+    except Exception as e:
+        print("Error: ", e)
 
-events = get_ical_events_from_kepler(user2, passwd2)
-for event in events:
-    print(f"Event: {event.uid}  --> {event.name}")
-add_to_ical("KA-Kepi-8c", events)
-create_qr_code("KA Kepi 8c", KA_Kepi_8c_url)
-print("Events added successfully!")
+    # show current time:
+
+    print("");
+    print("Last updated at ", datetime.now())
+            
+    print("Sleeping for 6 hour...")
+    time.sleep(3600 * 6)        
+        
+        
+# events = get_ical_events_from_kepler(user1, passwd1)
+# for event in events:
+#     print(f"Event: {event.uid}  --> {event.name}")
+# add_to_ical("KA-Kepi-6c", "6c: ", events)
+# create_qr_code("KA Kepi 6c", KA_Kepi_6c_url)
+# print("Events added successfully!")
+
+# events = get_ical_events_from_kepler(user2, passwd2)
+# for event in events:
+#     print(f"Event: {event.uid}  --> {event.name}")
+# add_to_ical("KA-Kepi-8c", "8c: ", events)
+# create_qr_code("KA Kepi 8c", KA_Kepi_8c_url)
+# print("Events added successfully!")
