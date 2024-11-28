@@ -36,7 +36,7 @@ pip install -r requirements.txt
 ### Setup credentials
 
 You need to set up the credentials for the classwork and icloud calender.
-For doing this copy the empty template file and adjust the values:
+For doing this, copy the empty template file and adjust the values:
 ```bash
 cp .env-copy-template .env
 ```
@@ -83,10 +83,12 @@ Sleeping for 6 hour...
 ### Running via docker
 
 I run this service inside a docker container.
-To create ist:
+
+To create it:
 ```bash
 ./create_docker.sh
 ```
+
 And to run it in the background (restart option is 'unless-stopped'):
 ```bash
 ./run_docker.sh
@@ -95,6 +97,7 @@ And to run it in the background (restart option is 'unless-stopped'):
 
 ### ToDo
 - Remove hardcoded strings for the calender name.
-- Calender url can be taken from the connection.
+- Calender url can be taken from the connection, no need for config.
 - Create QR code only if the file is missing. 
 - ...
+
