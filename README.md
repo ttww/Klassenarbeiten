@@ -5,7 +5,7 @@ Synchronize classwork entries from Kepi Tübingen https://orga.kepi.de/gfs/login
 This is a quick hack to copy & modify the "strange" classwork entries from the official web based classwork calender to my icloud calender...
 
 How is it done?
-- login with the given credentials to the classwork calender (via user1/passwd1 and user2/passwd2 .env entries)
+- Login with the given credentials to the classwork calender (via user1/passwd1 and user2/passwd2 .env entries)
 - Fetch the ICS file for one year
 - Fix bad ICS data (eliminate double `DTSTAMP` entries) so that I can use the library to read it...
 - Login to the icloud calender
