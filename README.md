@@ -15,7 +15,7 @@ How is it done?
 *If you want to use it, you need to adjust a few lines in the src/main.py program, because the classes and calendar names are hardcoded (but this should be easy).*
 
 ### Setup apple calender for sharing
-- create app-specific icloud password, see https://support.apple.com/en-us/102654
+- Create app-specific icloud password, see https://support.apple.com/en-us/102654
 - Create two calender (one for each child) which the correct name (see code)
 - Enable sharing and copy the calender url (starting with `webcal://...` to the config)
 - Uncomment the QR code generation
