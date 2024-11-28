@@ -14,13 +14,13 @@ How is it done?
 
 *If you want to use it, you need to adjust a few lines in the src/main.py program, because the classes and calendar names are hardcoded (but this should be easy).*
 
-#### Setup apple calender:
+### Setup apple calender for sharing
 - create app-specific icloud password, see https://support.apple.com/en-us/102654
 - Create two calender (one for each child) which the correct name (see code)
 - Enable sharing and copy the calender url (starting with `webcal://...` to the config)
 - Uncomment the QR code generation
 
-#### Setup python
+### Setup python
 
 ```bash
 # Clone repository:
@@ -33,7 +33,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Setup credentials
+### Setup credentials
 
 You need to set up the credentials for the classwork and icloud calender.
 For doing this copy the empty template file and adjust the values:
@@ -43,7 +43,7 @@ cp .env-copy-template .env
 and edit the `.env` file. See the comments inside.
 Do not add this file to git...
 
-#### Running manually
+### Running manually
 
 Currently, the source code is running in an endless loop with a 6 hour pause in-between.
 You can run it manually and stop it by hitting ctrl-c:
@@ -80,7 +80,7 @@ Last updated at  2024-11-28 17:10:37.268468
 Sleeping for 6 hour...
 ```
 
-#### Running via docker
+### Running via docker
 
 I run this service inside a docker container.
 To create ist:
@@ -93,7 +93,7 @@ And to run it in the background (restart option is 'unless-stopped'):
 ```
 
 
-#### ToDo
+### ToDo
 - Remove hardcoded strings for the calender name.
 - Calender url can be taken from the connection.
 - Create QR code only if the file is missing. 
